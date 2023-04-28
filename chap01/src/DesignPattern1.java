@@ -25,3 +25,37 @@ class DesignPattern1_2 {
         }
     }
 }
+
+// 1.1 싱글톤패턴_의존성주입 DI
+// (의존성이 높은 경우, 클래스 간 관계)
+class Pencil1 {}
+
+class Store1 {
+    private Pencil1 pencil1;
+
+    public Store1() { // 생성자
+        this.pencil1 = new Pencil1();
+    }
+}
+
+// (의존성 주입 -> 느슨한결합형태)
+interface Product {} // 다형성 (여러가지 제품을 하나로 표현하는 interface)
+class Pencil2 implements Product{}
+
+class Store2 {
+    private Product product;
+
+    public Store2(Product product) { // 생성자 (객체를 넣어주는 방식)
+        this.product = product;
+    }
+}
+
+class BeanFactory {
+    public void store2() {
+        // Bean 생성
+        Product pencil2 = new Pencil2();
+
+        // 의존성주입
+        Store2 store2 = new Store2(pencil2);
+    }
+}
