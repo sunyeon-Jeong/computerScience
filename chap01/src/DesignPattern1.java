@@ -1,3 +1,5 @@
+import java.sql.SQLOutput;
+
 // 1.1 싱글톤패턴 : 하나의 클래스에 하나의 인스턴스
 class DesignPattern1_1 {
     private static class singleInstanceHolder { // 메서드(객체 생성하는)
@@ -57,5 +59,83 @@ class BeanFactory {
 
         // 의존성주입
         Store2 store2 = new Store2(pencil2);
+    }
+}
+
+
+// 1.2 팩토리패턴 : 객체생성부분 -> 떼어내 추상화, 상위클래스 : 뼈대결정 + 하위클래스 : 객체  생성 구체적내용 결정
+// super class -> Lattee, Americano, DefaultCoffee의 부모클래스
+abstract class Coffee { // 객체생성부분 추상화
+    public abstract int getPrice(); // 메서드
+
+    @Override
+    public String toString() { // 메서드
+        return "Hi this coffee is " + this.getPrice();
+    }
+}
+
+class DefaultCoffee extends Coffee {
+    private int price; // 멤버변수
+
+    public DefaultCoffee() { // 생성자
+        this.price = -1;
+    }
+
+    // Coffee 클래스 getPrice() 메서드 -> 생성자로 설정한 값 덮어씌움
+    @Override
+    public int getPrice() {
+        return this.price;
+    }
+}
+
+class Latte extends Coffee {
+    private int price; // 멤버변수
+
+    public Latte(int price) { // 생성자
+        this.price = price;
+    }
+
+    // Coffee 클래스 getPrice() 메서드 -> 생성자로 설정한 값 덮어씌움
+    @Override
+    public int getPrice() {
+        return this.price;
+    }
+}
+
+class Americano extends Coffee {
+    private int price; // 멤버변수
+
+    public Americano(int price) { // 생성자
+        this.price = price;
+    }
+
+    // Coffee 클래스 getPrice() 메서드 -> 생성자로 설정한 값 덮어씌움
+    @Override
+    public int getPrice() {
+        return this.price;
+    }
+}
+
+class CoffeeFactory {
+    public static Coffee getCoffee(String type, int price) { // 메서드
+        if ("Latte".equalsIgnoreCase(type)) { // 입력값(type) = "Latte"
+            return new Latte(price);
+        }
+        else if ("Americano".equalsIgnoreCase(type)) { // 입력값(type) = "Americano"
+            return new Americano(price);
+        }
+        else {
+            return new DefaultCoffee();
+        }
+    }
+}
+
+class DesignPattern1_3 {
+    public static void main(String[] args) {
+        Coffee latte = CoffeeFactory.getCoffee("Latte", 4000);
+        Coffee ame = CoffeeFactory.getCoffee("Americano", 3000);
+
+        System.out.println("Factory latte :: " + latte);
+        System.out.println("Factory ame :: " + ame);
     }
 }
