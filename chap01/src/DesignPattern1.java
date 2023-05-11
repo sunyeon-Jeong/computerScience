@@ -1,4 +1,6 @@
 import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 
 // 1.1 싱글톤패턴 : 하나의 클래스에 하나의 인스턴스
 class DesignPattern1_1 {
@@ -137,5 +139,126 @@ class DesignPattern1_3 {
 
         System.out.println("Factory latte :: " + latte);
         System.out.println("Factory ame :: " + ame);
+    }
+}
+
+
+// 1.3 전략패턴 : 객체 행위 변경 시, 직접 수정 X
+// -> 전략(캡슐화한 알고리즘) 컨텍스트 안에서 변경
+// 결제 interface
+interface PaymentStrategy {
+    public void pay(int amount); // pay 메서드
+}
+
+// (결제) 전략 1
+class KAKAOCardStrategy implements PaymentStrategy {
+    private String name;
+    private String cardNumber;
+    private String cvv;
+    private String dateOfExpiry;
+
+    // 생성자
+    public KAKAOCardStrategy(String name, String cardNumber, String cvv, String dateOfExpiry) {
+        this.name = name;
+        this.cardNumber = cardNumber;
+        this.cvv = cvv;
+        this.dateOfExpiry = dateOfExpiry;
+    }
+
+    // PaymentStrategy interface pay 메서드
+    @Override
+    public void pay(int amount) {
+        System.out.println(amount + " paid using KAKAOCard.");
+    }
+}
+
+// (결제) 전략 2
+class LUNACardStrategy implements PaymentStrategy {
+    private String email;
+    private String password;
+
+    // 생성자
+    public LUNACardStrategy (String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    // PaymentStrategy interface pay 메서드
+    @Override
+    public void pay(int amount) {
+        System.out.println(amount + " paid using LUNACard.");
+    }
+}
+
+// 상품 클래스
+class Item {
+    private String name;
+    private int price;
+
+    // 생성자
+    public Item (String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    // 메서드
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+}
+
+// 장바구니 클래스
+class ShoppingCart {
+    // Item 클래스 리스트 객체
+    List<Item> items;
+
+    // 생성자
+    public ShoppingCart() {
+        this.items = new ArrayList<Item>();
+    }
+
+    // 메서드
+    public void addItem(Item item) {
+        this.items.add(item);
+    }
+
+    public void removeItem(Item item) {
+        this.items.remove(item);
+    }
+
+    public int calculateTotal() {
+        int sum = 0;
+        for (Item item : items) {
+            sum += item.getPrice();
+        }
+        return sum;
+    }
+
+    public void pay(PaymentStrategy paymentStrategy) {
+        int amount = calculateTotal();
+        paymentStrategy.pay(amount);
+    }
+}
+
+class DesignPattern1_4 {
+    public static void main(String[] args) {
+        // 객체 생성
+        ShoppingCart cart = new ShoppingCart();
+
+        Item A = new Item("mallang", 1000);
+        Item B = new Item("quokka", 1000);
+
+        cart.addItem(A);
+        cart.addItem(B);
+
+        // pay by LUNACard
+        cart.pay(new LUNACardStrategy("quokka@gmail.com", "quokka"));
+
+        // pay by KAKAOCard
+        cart.pay(new KAKAOCardStrategy("mallang", "mallang123", "123", "04/12"));
     }
 }
