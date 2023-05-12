@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -262,3 +261,91 @@ class DesignPattern1_4 {
         cart.pay(new KAKAOCardStrategy("mallang", "mallang123", "123", "04/12"));
     }
 }
+
+
+// 1.4 옵저버패턴 : 주체가 객체의 상태변화 관찰 -> 상태변화 감지 -> 메서드통해 옵저버에게 변화 notification
+interface Subject {
+    public void register(Observer obj);
+    public void unregister(Observer obj);
+    public void notifyObservers();
+    public Object getUpdate(Observer obj);
+}
+
+interface Observer {
+    public void update();
+}
+
+// 자바 구현방식 : 부모 interface -> 자식클래스에서 재정의 하여 구현
+// 반드시 부모클래스의 메서드를 재정의해야함 (!= 상속 extends)
+class Topic implements Subject {
+    private List<Observer> observers;
+    private String message;
+
+    // 생성자
+    public Topic() {
+        this.observers = new ArrayList<>();
+        this.message = "";
+    }
+
+    // 부모클래스 메서드 오버라이드(재정의)
+    @Override
+    public void register(Observer obj) {
+        if (!observers.contains(obj)) observers.add(obj);
+    }
+
+    @Override
+    public void unregister(Observer obj) {
+        observers.remove(obj);
+    }
+
+    @Override
+    public void notifyObservers() {
+        this.observers.forEach(Observer::update);
+    }
+
+    @Override
+    public Object getUpdate(Observer obj) {
+        return this.message;
+    }
+
+    public void postMessage(String msg) {
+        System.out.println("Message sended to Topic: " + msg);
+        this.message = msg;
+        notifyObservers();
+    }
+}
+
+class TopicSubscriber implements Observer {
+    private String name;
+    private Subject topic;
+
+    // 생성자
+    public TopicSubscriber(String name, Subject topic) {
+        this.name = name;
+        this.topic = topic;
+    }
+
+    // 부모클래스 메서드 오버라이드(재정의)
+    @Override
+    public void update() {
+        String msg = (String) topic.getUpdate(this);
+        System.out.println(name + ":: got message >> " + msg);
+    }
+}
+
+class DesignPattern1_5 {
+    public static void main(String[] args) {
+        // 객체생성
+        Topic topic = new Topic();
+        Observer a = new TopicSubscriber("a", topic);
+        Observer b = new TopicSubscriber("b", topic);
+        Observer c = new TopicSubscriber("c", topic);
+
+        topic.register(a);
+        topic.register(b);
+        topic.register(c);
+
+        topic.postMessage("mallang is crossfit champion!");
+    }
+}
+// topic은 주체이자 객체
